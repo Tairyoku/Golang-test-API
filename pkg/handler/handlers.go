@@ -2,6 +2,8 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
+	_ "github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"test/pkg/service"
 )
 
@@ -15,6 +17,7 @@ func NewHandler(services *service.Service) *Handler {
 
 func (h *Handler) InitRoutes() *echo.Echo {
 	router := echo.New()
+	router.GET("/swagger/server/*", echoSwagger.WrapHandler)
 
 	auth := router.Group("/auth")
 	{

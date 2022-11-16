@@ -6,6 +6,18 @@ import (
 	"test"
 )
 
+// SignUp godoc
+// @Summary      Create a new user
+// @Description  add new user
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user	body     UserResponse   true  "Add user"
+// @Success      200 	{object} IdResponse		 "result is id of user"
+// @Failure 	 400 	{object} ErrorResponse	 "incorrect request data"
+// @Failure 	 404 	{object} ErrorResponse	 "user id not found"
+// @Failure 	 500 	{object} ErrorResponse	 "something went wrong"
+// @Router       /auth/sign-up [post]
 func (h *Handler) SignUp(c echo.Context) error {
 	var input test.User
 
@@ -50,6 +62,19 @@ type SignInInput struct {
 	Password string `json:"password" form:"password"  binding:"required"`
 }
 
+// SignIn godoc
+// @Summary      Generate a new user token
+// @Description  get user token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user	body     SignInInput   true  "Get user token"
+// @Success      200 	{object} TokenResponse   "result is user token"
+// @Failure 	 400 	{object} ErrorResponse	 "incorrect request data"
+// @Failure 	 400 	{object} ErrorResponse	 "incorrect password"
+// @Failure 	 404 	{object} ErrorResponse	 "user not found"
+// @Failure 	 500 	{object} ErrorResponse	 "something went wrong"
+// @Router       /auth/sign-in [post]
 func (h *Handler) SignIn(c echo.Context) error {
 	var input SignInInput
 	if err := c.Bind(&input); err != nil {
@@ -58,7 +83,7 @@ func (h *Handler) SignIn(c echo.Context) error {
 	}
 	errCheck := h.services.Authorization.CheckUser(input.Username)
 	if errCheck != nil {
-		NewErrorResponse(c, http.StatusBadRequest, "user not found")
+		NewErrorResponse(c, http.StatusNotFound, "user not found")
 		return nil
 	}
 	token, err := h.services.Authorization.GenerateToken(input.Username, input.Password)

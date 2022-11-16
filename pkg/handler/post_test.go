@@ -350,7 +350,7 @@ func TestHandler_UpdatePost(t *testing.T) {
 				s.EXPECT().Update(userId, postId, post).Return(nil)
 			},
 			expectedStatusCode:   202,
-			expectedResponseBody: `{"message":"Post with id 1 updated."}` + "\n",
+			expectedResponseBody: `{"message":"Post with id 1 updated"}` + "\n",
 		},
 		{
 			name:      "server error",
@@ -440,7 +440,7 @@ func TestHandler_DeletePost(t *testing.T) {
 				s.EXPECT().Delete(userId, postId).Return(nil)
 			},
 			expectedStatusCode:   202,
-			expectedResponseBody: `{"message":"Post with id 1 deleted."}` + "\n",
+			expectedResponseBody: `{"message":"Post with id 1 deleted"}` + "\n",
 		},
 		{
 			name:   "server error",

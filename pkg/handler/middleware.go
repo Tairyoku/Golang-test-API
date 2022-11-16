@@ -47,12 +47,12 @@ func (h *Handler) userIdentify(next echo.HandlerFunc) echo.HandlerFunc {
 func GetUserId(c echo.Context) (int, error) {
 	id := c.Get(userCtx)
 	if id == 0 {
-		NewErrorResponse(c, http.StatusInternalServerError, "user id not found")
+		NewErrorResponse(c, http.StatusNotFound, "user id not found")
 		return 0, errors.New("user id not found")
 	}
 	idInt, ok := id.(int)
 	if !ok {
-		NewErrorResponse(c, http.StatusInternalServerError, "user id is of valid type")
+		NewErrorResponse(c, http.StatusBadRequest, "user id is of valid type")
 		return 0, errors.New("user id is of valid type")
 	}
 	return idInt, nil

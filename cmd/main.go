@@ -8,6 +8,20 @@ import (
 	"test/pkg/service"
 )
 
+// @title          Server API
+// @version        0.0.1
+// @description    Work with server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name Tairyoku
+// @contact.url  http://www.swagger.io/tairyoku
+
+// @license.name Apache 2.0
+// @license.url  http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host     localhost:8080
+// @BasePath /
+
 func main() {
 
 	db, err := repository.NewMysqlDB(repository.Config{
