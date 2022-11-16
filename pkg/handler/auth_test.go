@@ -183,7 +183,7 @@ func TestHandler_SignIn(t *testing.T) {
 			mockBehavior: func(s *mockService.MockAuthorization, user SignInInput) {
 				s.EXPECT().CheckUser(user.Username).Return(errors.New("user not found"))
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   404,
 			expectedResponseBody: `{"message":"user not found"}` + "\n",
 		},
 		{

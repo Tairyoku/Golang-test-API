@@ -1,0 +1,485 @@
+basePath: /
+definitions:
+  handler.CommentRequest:
+    properties:
+      body:
+        type: string
+    required:
+    - body
+    type: object
+  handler.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  handler.GetCommentsResponse:
+    properties:
+      comments:
+        items:
+          $ref: '#/definitions/test.Comment'
+        type: array
+    type: object
+  handler.GetPostsResponse:
+    properties:
+      posts:
+        items:
+          $ref: '#/definitions/test.Post'
+        type: array
+    type: object
+  handler.IdResponse:
+    properties:
+      id:
+        type: integer
+    type: object
+  handler.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  handler.PostRequest:
+    properties:
+      anons:
+        type: string
+      title:
+        type: string
+    required:
+    - anons
+    - title
+    type: object
+  handler.SignInInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  handler.TokenResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  handler.UserResponse:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - name
+    - password
+    - username
+    type: object
+  test.Comment:
+    properties:
+      body:
+        type: string
+      id:
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - body
+    - user_id
+    type: object
+  test.Post:
+    properties:
+      anons:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+    required:
+    - anons
+    - title
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: Tairyoku
+    url: http://www.swagger.io/tairyoku
+  description: Work with server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Server API
+  version: 0.0.1
+paths:
+  /api/posts:
+    get:
+      description: Get all posts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.GetPostsResponse'
+        "500":
+          description: something went wrong
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Find all posts
+      tags:
+      - posts
+    post:
+      consumes:
+      - application/json
+      description: add post by json
+      parameters:
+      - description: Add post
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/handler.PostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: result is id of post
+          schema:
+            $ref: '#/definitions/handler.IdResponse'
+        "400":
+          description: user id is of valid type
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: user id not found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Add a post
+      tags:
+      - posts
+  /api/posts/{id}:
+    delete:
+      description: Delete by json post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Post with id # deleted'
+          schema:
+            $ref: '#/definitions/handler.MessageResponse'
+        "400":
+          description: id is not integer
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: user id not found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Delete a post
+      tags:
+      - posts
+    get:
+      description: Get post by post ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/test.Post'
+        "400":
+          description: ID is not integer
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: ID is incorrect
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Find post by post ID
+      tags:
+      - posts
+    put:
+      consumes:
+      - application/json
+      description: Update by json post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update post
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/handler.PostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Post with id # updated'
+          schema:
+            $ref: '#/definitions/handler.MessageResponse'
+        "400":
+          description: id is not integer
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: user id not found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Update a post
+      tags:
+      - posts
+  /api/posts/{postId}/comments:
+    get:
+      description: Get all comments
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.GetCommentsResponse'
+        "400":
+          description: postId is not integer
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: something went wrong
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Find all comments
+      tags:
+      - comments
+    post:
+      consumes:
+      - application/json
+      description: add by json comment
+      parameters:
+      - description: Add comment
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: result is id of comment
+          schema:
+            $ref: '#/definitions/handler.IdResponse'
+        "400":
+          description: user id is of valid type
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: user id not found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Add a comment
+      tags:
+      - comments
+  /api/posts/{postId}/comments/{id}:
+    delete:
+      description: Delete by json comment
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'comment with id # deleted'
+          schema:
+            $ref: '#/definitions/handler.MessageResponse'
+        "400":
+          description: postId is not integer
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Delete a comment
+      tags:
+      - comments
+    put:
+      consumes:
+      - application/json
+      description: Update by json comment
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      - description: Update comment
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Comment with id # updated'
+          schema:
+            $ref: '#/definitions/handler.MessageResponse'
+        "400":
+          description: postId is not integer
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Update a comment
+      tags:
+      - comments
+  /api/posts/user/{id}:
+    get:
+      description: Get user's posts by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.GetPostsResponse'
+        "400":
+          description: ID is not integer
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: wrong user ID
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Find all user's posts by user ID
+      tags:
+      - posts
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: get user token
+      parameters:
+      - description: Get user token
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handler.SignInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: result is user token
+          schema:
+            $ref: '#/definitions/handler.TokenResponse'
+        "400":
+          description: incorrect password
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: user not found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: something went wrong
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Generate a new user token
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: add new user
+      parameters:
+      - description: Add user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UserResponse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: result is id of user
+          schema:
+            $ref: '#/definitions/handler.IdResponse'
+        "400":
+          description: incorrect request data
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: user id not found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: something went wrong
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Create a new user
+      tags:
+      - auth
+swagger: "2.0"
