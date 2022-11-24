@@ -52,7 +52,6 @@ func TestHandler_userIdentify(t *testing.T) {
 			handler := NewHandler(services)
 
 			e := echo.New()
-			//e.Use(handler.userIdentify)
 			e.GET("/protected", nil, handler.userIdentify, func(next echo.HandlerFunc) echo.HandlerFunc {
 				return func(c echo.Context) error {
 					id := c.Get(userCtx).(int)
@@ -126,11 +125,9 @@ func TestHandler_GoogleSignUp(t *testing.T) {
 
 			//Тестовый сервер
 			e := echo.New()
-			//e.POST("/sign-up", handler.SignUp)
 
 			//Тестовый запрос
 			req := httptest.NewRequest(http.MethodPost, "/sign-up",
-				//bytes.NewBufferString(testCase.inputBody))
 				strings.NewReader(testCase.inputBody))
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
@@ -198,11 +195,9 @@ func TestHandler_GoogleSignIn(t *testing.T) {
 
 			//Тестовый сервер
 			e := echo.New()
-			//e.POST("/sign-up", handler.SignUp)
 
 			//Тестовый запрос
 			req := httptest.NewRequest(http.MethodPost, "/sign-in",
-				//bytes.NewBufferString(testCase.inputBody))
 				strings.NewReader(testCase.inputBody))
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()

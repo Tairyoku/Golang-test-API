@@ -286,20 +286,6 @@ func TestHandler_DeleteComment(t *testing.T) {
 			expectedStatusCode:   500,
 			expectedResponseBody: `{"message":"server error"}` + "\n",
 		},
-		//{
-		//	name:      "Error request data",
-		//	inputBody: "error",
-		//	userId:    3,
-		//	postId:    1,
-		//	inputPost: test.Post{
-		//		Title: "test title",
-		//		Anons: "test anons",
-		//	},
-		//	mockBehavior: func(s *mockService.MockComment, userId int, postId int, post test.Post) {
-		//	},
-		//	expectedStatusCode:   400,
-		//	expectedResponseBody: `{"message":"incorrect request data"}` + "\n",
-		//},
 	}
 
 	for _, testCase := range testTable {

@@ -74,7 +74,6 @@ func TestHandler_GetPosts(t *testing.T) {
 
 			//Тестовый запрос
 			req := httptest.NewRequest(http.MethodGet, "/api/posts", nil)
-			//req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			ctx := e.NewContext(req, rec)
 
