@@ -2,15 +2,15 @@ package handler
 
 import (
 	"github.com/labstack/echo/v4"
-	"test"
+	"test/pkg/repository/models"
 )
 
 type GetPostsResponse struct {
-	Posts []test.Post `json:"posts"`
+	Posts []models.Post `json:"posts"`
 }
 
 type GetCommentsResponse struct {
-	Comments []test.Comment `json:"comments"`
+	Comments []models.Comment `json:"comments"`
 }
 
 type MessageResponse struct {

@@ -8,19 +8,19 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
-	"test"
+	"test/pkg/repository/models"
 	"test/pkg/service"
 	mockService "test/pkg/service/mocks"
 	"testing"
 )
 
 func TestHandler_SignUp(t *testing.T) {
-	type mockBehavior func(s *mockService.MockAuthorization, user test.User)
+	type mockBehavior func(s *mockService.MockAuthorization, user models.User)
 
 	testTable := []struct {
 		name                 string
 		inputBody            string
-		inputUser            test.User
+		inputUser            models.User
 		mockBehavior         mockBehavior
 		expectedStatusCode   int
 		expectedResponseBody string
@@ -28,12 +28,12 @@ func TestHandler_SignUp(t *testing.T) {
 		{
 			name:      "ok",
 			inputBody: `{"name": "Test","username":"test username","password":"password"}`,
-			inputUser: test.User{
+			inputUser: models.User{
 				Name:     "Test",
 				Username: "test username",
 				Password: "password",
 			},
-			mockBehavior: func(s *mockService.MockAuthorization, user test.User) {
+			mockBehavior: func(s *mockService.MockAuthorization, user models.User) {
 				s.EXPECT().CreateUser(user).Return(1, nil)
 			},
 			expectedStatusCode:   200,
@@ -42,12 +42,12 @@ func TestHandler_SignUp(t *testing.T) {
 		{
 			name:      "Error request data",
 			inputBody: "error",
-			inputUser: test.User{
+			inputUser: models.User{
 				Name:     "Test",
 				Username: "test username",
 				Password: "password",
 			},
-			mockBehavior: func(r *mockService.MockAuthorization, user test.User) {
+			mockBehavior: func(r *mockService.MockAuthorization, user models.User) {
 				//r.EXPECT().CreateUser(user).Return(0, errors.New("you must enter a username"))
 			},
 			expectedStatusCode:   400,
@@ -56,11 +56,11 @@ func TestHandler_SignUp(t *testing.T) {
 		{
 			name:      "Wrong Input UserName",
 			inputBody: `{"name": "Test Name", "password": "qwerty"}`,
-			inputUser: test.User{
+			inputUser: models.User{
 				Name:     "Test",
 				Password: "password",
 			},
-			mockBehavior: func(r *mockService.MockAuthorization, user test.User) {
+			mockBehavior: func(r *mockService.MockAuthorization, user models.User) {
 				//r.EXPECT().CreateUser(user).Return(0, errors.New("you must enter a username"))
 			},
 			expectedStatusCode:   400,
@@ -69,7 +69,7 @@ func TestHandler_SignUp(t *testing.T) {
 		{
 			name:      "Wrong Input Name",
 			inputBody: `{"username": "username", "password": "qwerty"}`,
-			mockBehavior: func(r *mockService.MockAuthorization, user test.User) {
+			mockBehavior: func(r *mockService.MockAuthorization, user models.User) {
 				//r.EXPECT().CreateUser(user).Return(0, errors.New("invalid input body"))
 			},
 			expectedStatusCode:   400,
@@ -78,7 +78,7 @@ func TestHandler_SignUp(t *testing.T) {
 		{
 			name:      "Wrong Input Password",
 			inputBody: `{"username": "username", "name": "Test Name"}`,
-			mockBehavior: func(r *mockService.MockAuthorization, user test.User) {
+			mockBehavior: func(r *mockService.MockAuthorization, user models.User) {
 				//r.EXPECT().CreateUser(user).Return(0, errors.New("invalid input body"))
 			},
 			expectedStatusCode:   400,
@@ -87,12 +87,12 @@ func TestHandler_SignUp(t *testing.T) {
 		{
 			name:      "Service Error",
 			inputBody: `{"name": "Test","username":"test username","password":"password"}`,
-			inputUser: test.User{
+			inputUser: models.User{
 				Name:     "Test",
 				Username: "test username",
 				Password: "password",
 			},
-			mockBehavior: func(r *mockService.MockAuthorization, user test.User) {
+			mockBehavior: func(r *mockService.MockAuthorization, user models.User) {
 				r.EXPECT().CreateUser(user).Return(0, errors.New("something went wrong"))
 			},
 			expectedStatusCode:   500,

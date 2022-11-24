@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"test"
+	"test/pkg/repository/models"
 )
 
 const (
@@ -89,7 +89,7 @@ func SetupConfig() *oauth2.Config {
 	return googleOauthConfig
 }
 
-func (h *Handler) GoogleSignUp(c echo.Context, input test.User) error {
+func (h *Handler) GoogleSignUp(c echo.Context, input models.User) error {
 	id, err := h.services.Authorization.CreateUser(input)
 
 	if err != nil {
@@ -105,7 +105,7 @@ func (h *Handler) GoogleSignUp(c echo.Context, input test.User) error {
 	return nil
 }
 
-func (h *Handler) GoogleSignIn(c echo.Context, input test.User) error {
+func (h *Handler) GoogleSignIn(c echo.Context, input models.User) error {
 	// if username is required, to login and to generate token
 	token, err := h.services.Authorization.GenerateToken(input.Username, input.Password)
 	if err != nil {

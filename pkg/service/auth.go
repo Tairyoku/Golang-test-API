@@ -5,15 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"test"
+	"os"
 	"test/pkg/repository"
+	"test/pkg/repository/models"
 	"time"
 )
 
 const (
-	salt      = "239tjeaWFYh2rofjw"
-	tokenTTL  = 48 * time.Hour
-	signInKey = "fl4i#kQgeg5leFrk&rkg43"
+	tokenTTL = 48 * time.Hour
 )
 
 type AuthService struct {
@@ -33,7 +32,7 @@ func (a *AuthService) Testing(name string) (string, error) {
 	return a.repository.Testing(name)
 }
 
-func (a *AuthService) CreateUser(user test.User) (int, error) {
+func (a *AuthService) CreateUser(user models.User) (int, error) {
 	user.Password = CreatePasswordHash(user.Password)
 	return a.repository.CreateUser(user)
 }
@@ -56,7 +55,7 @@ func (a *AuthService) GenerateToken(username, password string) (string, error) {
 		UserId: user.Id,
 	})
 
-	return token.SignedString([]byte(signInKey))
+	return token.SignedString([]byte(os.Getenv("signInKey")))
 }
 
 func (a *AuthService) ParseToken(accessToken string) (int, error) {
@@ -64,7 +63,7 @@ func (a *AuthService) ParseToken(accessToken string) (int, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
 		}
-		return []byte(signInKey), nil
+		return []byte(os.Getenv("signInKey")), nil
 	})
 	if err != nil {
 		return 0, err
@@ -80,5 +79,5 @@ func (a *AuthService) ParseToken(accessToken string) (int, error) {
 func CreatePasswordHash(password string) string {
 	hash := sha1.New()
 	hash.Write([]byte(password))
-	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+	return fmt.Sprintf("%x", hash.Sum([]byte(os.Getenv("salt"))))
 }

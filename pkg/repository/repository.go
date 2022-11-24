@@ -2,29 +2,29 @@ package repository
 
 import (
 	"gorm.io/gorm"
-	"test"
+	"test/pkg/repository/models"
 )
 
 type Authorization interface {
-	CreateUser(user test.User) (int, error)
-	GetUser(username, password string) (test.User, error)
+	CreateUser(user models.User) (int, error)
+	GetUser(username, password string) (models.User, error)
 	CheckUser(username string) error
 	Testing(name string) (string, error)
 }
 
 type Post interface {
-	Create(userId int, post test.Post) (int, error)
-	Get() ([]test.Post, error)
-	GetById(id int) (test.Post, error)
-	Update(userId, id int, post test.Post) error
-	Delete(userId, id int) error
-	GetByUserId(userId int) ([]test.Post, error)
+	Create(post models.Post) (int, error)
+	Get() ([]models.Post, error)
+	GetById(id int) (models.Post, error)
+	GetByUserId(userId int) ([]models.Post, error)
+	Update(id int, post models.Post) error
+	Delete(id int) error
 }
 
 type Comment interface {
-	Create(postId int, comment test.Comment) (int, error)
-	Get(postId int) ([]test.Comment, error)
-	Update(postId, id int, comment test.Comment) error
+	Create(comment models.Comment) (int, error)
+	Get(postId int) ([]models.Comment, error)
+	Update(postId, id int, comment models.Comment) error
 	Delete(postId, id int) error
 }
 
@@ -36,8 +36,8 @@ type Repository struct {
 
 func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{
-		Authorization: NewAuthMySql(db),
-		Post:          NewPostMySql(db),
-		Comment:       NewCommentMySql(db),
+		Authorization: NewAuthRepository(db),
+		Post:          NewPostRepository(db),
+		Comment:       NewCommentRepository(db),
 	}
 }

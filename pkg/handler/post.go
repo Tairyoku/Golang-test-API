@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"test"
+	"test/pkg/repository/models"
 )
 
 // GetPosts godoc
@@ -118,13 +118,14 @@ func (h *Handler) PostPost(c echo.Context) error {
 		return errParams
 	}
 
-	var post test.Post
+	var post models.Post
 	errReq := GetRequest(c, &post)
 	if errReq != nil {
 		return nil
 	}
 
-	id, err := h.services.Post.Create(userId, post)
+	post.UserId = userId
+	id, err := h.services.Post.Create(post)
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, "server error")
 		return nil
@@ -159,18 +160,13 @@ func (h *Handler) UpdatePost(c echo.Context) error {
 		return errParams
 	}
 
-	userId, errUserParams := GetUserId(c)
-	if errUserParams != nil {
-		return errUserParams
-	}
-
-	var post test.Post
+	var post models.Post
 	errReq := GetRequest(c, &post)
 	if errReq != nil {
 		return nil
 	}
 
-	err := h.services.Post.Update(userId, id, post)
+	err := h.services.Post.Update(id, post)
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, "server error")
 		return nil
@@ -198,17 +194,12 @@ func (h *Handler) UpdatePost(c echo.Context) error {
 // @Failure 	500 {object} ErrorResponse	 "server error"
 // @Router       /api/posts/{id} [delete]
 func (h *Handler) DeletePost(c echo.Context) error {
-	userId, errUserParams := GetUserId(c)
-	if errUserParams != nil {
-		return nil
-	}
-
 	id, errParams := GetParam(c, ParamId)
 	if errParams != nil {
 		return nil
 	}
 
-	err := h.services.Post.Delete(userId, id)
+	err := h.services.Post.Delete(id)
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, "server error")
 		return nil

@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
-	"test"
+	"test/pkg/repository/models"
 	"test/pkg/service"
 	mockService "test/pkg/service/mocks"
 	"testing"
@@ -74,12 +74,12 @@ func TestHandler_userIdentify(t *testing.T) {
 }
 
 func TestHandler_GoogleSignUp(t *testing.T) {
-	type mockBehavior func(s *mockService.MockAuthorization, user test.User)
+	type mockBehavior func(s *mockService.MockAuthorization, user models.User)
 
 	testTable := []struct {
 		name                 string
 		inputBody            string
-		inputUser            test.User
+		inputUser            models.User
 		mockBehavior         mockBehavior
 		expectedStatusCode   int
 		expectedResponseBody string
@@ -87,12 +87,12 @@ func TestHandler_GoogleSignUp(t *testing.T) {
 		{
 			name:      "ok",
 			inputBody: `{"name": "Test","username":"test username","password":"password"}`,
-			inputUser: test.User{
+			inputUser: models.User{
 				Name:     "Test",
 				Username: "test username",
 				Password: "password",
 			},
-			mockBehavior: func(s *mockService.MockAuthorization, user test.User) {
+			mockBehavior: func(s *mockService.MockAuthorization, user models.User) {
 				s.EXPECT().CreateUser(user).Return(1, nil)
 			},
 			expectedStatusCode:   200,
@@ -101,8 +101,8 @@ func TestHandler_GoogleSignUp(t *testing.T) {
 		{
 			name:      "Service Error",
 			inputBody: `{"name": "Test","username":"test username","password":"password"}`,
-			inputUser: test.User{},
-			mockBehavior: func(s *mockService.MockAuthorization, user test.User) {
+			inputUser: models.User{},
+			mockBehavior: func(s *mockService.MockAuthorization, user models.User) {
 				s.EXPECT().CreateUser(user).Return(0, errors.New("something went wrong"))
 			},
 			expectedStatusCode:   500,
@@ -147,12 +147,12 @@ func TestHandler_GoogleSignUp(t *testing.T) {
 }
 
 func TestHandler_GoogleSignIn(t *testing.T) {
-	type mockBehavior func(s *mockService.MockAuthorization, user test.User)
+	type mockBehavior func(s *mockService.MockAuthorization, user models.User)
 
 	testTable := []struct {
 		name                 string
 		inputBody            string
-		inputUser            test.User
+		inputUser            models.User
 		mockBehavior         mockBehavior
 		expectedStatusCode   int
 		expectedResponseBody string
@@ -160,11 +160,11 @@ func TestHandler_GoogleSignIn(t *testing.T) {
 		{
 			name:      "ok",
 			inputBody: `{"username":"test username","password":"password"}`,
-			inputUser: test.User{
+			inputUser: models.User{
 				Username: "test username",
 				Password: "password",
 			},
-			mockBehavior: func(s *mockService.MockAuthorization, user test.User) {
+			mockBehavior: func(s *mockService.MockAuthorization, user models.User) {
 				s.EXPECT().GenerateToken(user.Username, user.Password).Return("token", nil)
 			},
 			expectedStatusCode:   200,
@@ -173,8 +173,8 @@ func TestHandler_GoogleSignIn(t *testing.T) {
 		{
 			name:      "Service Error",
 			inputBody: `{"name": "Test","username":"test username","password":"password"}`,
-			inputUser: test.User{},
-			mockBehavior: func(s *mockService.MockAuthorization, user test.User) {
+			inputUser: models.User{},
+			mockBehavior: func(s *mockService.MockAuthorization, user models.User) {
 				s.EXPECT().GenerateToken(user.Username, user.Password).Return("", errors.New("something went wrong"))
 			},
 			expectedStatusCode:   500,
@@ -246,7 +246,7 @@ func Test_GetParam(t *testing.T) {
 func Test_GetRequest(t *testing.T) {
 
 	inputBody := `{"name": "Test","username":"test username","password":"password"}`
-	wantedUser := test.User{
+	wantedUser := models.User{
 		Name:     "Test",
 		Username: "test username",
 		Password: "password",
@@ -258,7 +258,7 @@ func Test_GetRequest(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	ctx := e.NewContext(req, rec)
-	var outputUser test.User
+	var outputUser models.User
 
 	err := GetRequest(ctx, &outputUser)
 	if err != nil {

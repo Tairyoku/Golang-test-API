@@ -6,7 +6,7 @@ package mock_service
 
 import (
 	reflect "reflect"
-	test "test"
+	models "test/pkg/repository/models"
 
 	gomock "github.com/golang/mock/gomock"
 )
@@ -49,7 +49,7 @@ func (mr *MockAuthorizationMockRecorder) CheckUser(username interface{}) *gomock
 }
 
 // CreateUser mocks base method.
-func (m *MockAuthorization) CreateUser(user test.User) (int, error) {
+func (m *MockAuthorization) CreateUser(user models.User) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", user)
 	ret0, _ := ret[0].(int)
@@ -132,39 +132,39 @@ func (m *MockPost) EXPECT() *MockPostMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockPost) Create(userId int, post test.Post) (int, error) {
+func (m *MockPost) Create(post models.Post) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", userId, post)
+	ret := m.ctrl.Call(m, "Create", post)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockPostMockRecorder) Create(userId, post interface{}) *gomock.Call {
+func (mr *MockPostMockRecorder) Create(post interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockPost)(nil).Create), userId, post)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockPost)(nil).Create), post)
 }
 
 // Delete mocks base method.
-func (m *MockPost) Delete(userId, id int) error {
+func (m *MockPost) Delete(id int) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", userId, id)
+	ret := m.ctrl.Call(m, "Delete", id)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockPostMockRecorder) Delete(userId, id interface{}) *gomock.Call {
+func (mr *MockPostMockRecorder) Delete(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockPost)(nil).Delete), userId, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockPost)(nil).Delete), id)
 }
 
 // Get mocks base method.
-func (m *MockPost) Get() ([]test.Post, error) {
+func (m *MockPost) Get() ([]models.Post, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get")
-	ret0, _ := ret[0].([]test.Post)
+	ret0, _ := ret[0].([]models.Post)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -176,10 +176,10 @@ func (mr *MockPostMockRecorder) Get() *gomock.Call {
 }
 
 // GetById mocks base method.
-func (m *MockPost) GetById(id int) (test.Post, error) {
+func (m *MockPost) GetById(id int) (models.Post, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetById", id)
-	ret0, _ := ret[0].(test.Post)
+	ret0, _ := ret[0].(models.Post)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -191,10 +191,10 @@ func (mr *MockPostMockRecorder) GetById(id interface{}) *gomock.Call {
 }
 
 // GetByUserId mocks base method.
-func (m *MockPost) GetByUserId(userId int) ([]test.Post, error) {
+func (m *MockPost) GetByUserId(userId int) ([]models.Post, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByUserId", userId)
-	ret0, _ := ret[0].([]test.Post)
+	ret0, _ := ret[0].([]models.Post)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -206,17 +206,17 @@ func (mr *MockPostMockRecorder) GetByUserId(userId interface{}) *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockPost) Update(userId, id int, post test.Post) error {
+func (m *MockPost) Update(id int, post models.Post) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", userId, id, post)
+	ret := m.ctrl.Call(m, "Update", id, post)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockPostMockRecorder) Update(userId, id, post interface{}) *gomock.Call {
+func (mr *MockPostMockRecorder) Update(id, post interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockPost)(nil).Update), userId, id, post)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockPost)(nil).Update), id, post)
 }
 
 // MockComment is a mock of Comment interface.
@@ -243,18 +243,18 @@ func (m *MockComment) EXPECT() *MockCommentMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockComment) Create(postId int, comment test.Comment) (int, error) {
+func (m *MockComment) Create(comment models.Comment) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", postId, comment)
+	ret := m.ctrl.Call(m, "Create", comment)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockCommentMockRecorder) Create(postId, comment interface{}) *gomock.Call {
+func (mr *MockCommentMockRecorder) Create(comment interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockComment)(nil).Create), postId, comment)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockComment)(nil).Create), comment)
 }
 
 // Delete mocks base method.
@@ -272,10 +272,10 @@ func (mr *MockCommentMockRecorder) Delete(postId, id interface{}) *gomock.Call {
 }
 
 // Get mocks base method.
-func (m *MockComment) Get(postId int) ([]test.Comment, error) {
+func (m *MockComment) Get(postId int) ([]models.Comment, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", postId)
-	ret0, _ := ret[0].([]test.Comment)
+	ret0, _ := ret[0].([]models.Comment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -287,7 +287,7 @@ func (mr *MockCommentMockRecorder) Get(postId interface{}) *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockComment) Update(postId, id int, comment test.Comment) error {
+func (m *MockComment) Update(postId, id int, comment models.Comment) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", postId, id, comment)
 	ret0, _ := ret[0].(error)

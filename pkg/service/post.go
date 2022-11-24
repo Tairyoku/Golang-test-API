@@ -1,8 +1,8 @@
 package service
 
 import (
-	"test"
 	"test/pkg/repository"
+	"test/pkg/repository/models"
 )
 
 type PostService struct {
@@ -13,26 +13,26 @@ func NewPostService(repository repository.Post) *PostService {
 	return &PostService{repository: repository}
 }
 
-func (p *PostService) Create(userId int, post test.Post) (int, error) {
-	return p.repository.Create(userId, post)
+func (p *PostService) Create(post models.Post) (int, error) {
+	return p.repository.Create(post)
 }
 
-func (p *PostService) Get() ([]test.Post, error) {
+func (p *PostService) Get() ([]models.Post, error) {
 	return p.repository.Get()
 }
 
-func (p *PostService) GetById(id int) (test.Post, error) {
+func (p *PostService) GetById(id int) (models.Post, error) {
 	return p.repository.GetById(id)
 }
 
-func (p *PostService) GetByUserId(userId int) ([]test.Post, error) {
+func (p *PostService) GetByUserId(userId int) ([]models.Post, error) {
 	return p.repository.GetByUserId(userId)
 }
 
-func (p *PostService) Update(userId, id int, post test.Post) error {
-	return p.repository.Update(userId, id, post)
+func (p *PostService) Update(id int, post models.Post) error {
+	return p.repository.Update(id, post)
 }
 
-func (p *PostService) Delete(userId, id int) error {
-	return p.repository.Delete(userId, id)
+func (p *PostService) Delete(id int) error {
+	return p.repository.Delete(id)
 }

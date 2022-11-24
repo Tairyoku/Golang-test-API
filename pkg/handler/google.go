@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"io"
 	"net/http"
-	"test"
+	"test/pkg/repository/models"
 )
 
 type GoogleAuth struct {
@@ -62,7 +62,7 @@ func (h *Handler) GoogleCallback(c echo.Context) error {
 		return errJSON
 	}
 
-	var input = test.User{
+	var input = models.User{
 		Id:       0,
 		Name:     googleAuth.Name,
 		Username: googleAuth.Email,

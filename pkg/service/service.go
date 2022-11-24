@@ -1,14 +1,14 @@
 package service
 
 import (
-	"test"
 	"test/pkg/repository"
+	"test/pkg/repository/models"
 )
 
 //go:generate mockgen -source=service.go -destination=mocks/mock.go
 
 type Authorization interface {
-	CreateUser(user test.User) (int, error)
+	CreateUser(user models.User) (int, error)
 	GenerateToken(username, password string) (string, error)
 	ParseToken(token string) (int, error)
 	CheckUser(username string) error
@@ -16,18 +16,18 @@ type Authorization interface {
 }
 
 type Post interface {
-	Create(userId int, post test.Post) (int, error)
-	Get() ([]test.Post, error)
-	GetById(id int) (test.Post, error)
-	Update(userId, id int, post test.Post) error
-	Delete(userId, id int) error
-	GetByUserId(userId int) ([]test.Post, error)
+	Create(post models.Post) (int, error)
+	Get() ([]models.Post, error)
+	GetById(id int) (models.Post, error)
+	Update(id int, post models.Post) error
+	Delete(id int) error
+	GetByUserId(userId int) ([]models.Post, error)
 }
 
 type Comment interface {
-	Create(postId int, comment test.Comment) (int, error)
-	Get(postId int) ([]test.Comment, error)
-	Update(postId, id int, comment test.Comment) error
+	Create(comment models.Comment) (int, error)
+	Get(postId int) ([]models.Comment, error)
+	Update(postId, id int, comment models.Comment) error
 	Delete(postId, id int) error
 }
 
@@ -41,6 +41,6 @@ func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
 		Post:          NewPostService(repos.Post),
-		Comment: NewCommentService(repos.Comment),
+		Comment:       NewCommentService(repos.Comment),
 	}
 }

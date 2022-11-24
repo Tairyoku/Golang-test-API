@@ -1,8 +1,8 @@
 package service
 
 import (
-	"test"
 	"test/pkg/repository"
+	"test/pkg/repository/models"
 )
 
 type CommentService struct {
@@ -13,17 +13,15 @@ func NewCommentService(repository repository.Comment) *CommentService {
 	return &CommentService{repository: repository}
 }
 
-
-
-func (p *CommentService) Create(postId int, comment test.Comment) (int, error) {
-	return p.repository.Create(postId, comment)
+func (p *CommentService) Create(comment models.Comment) (int, error) {
+	return p.repository.Create(comment)
 }
 
-func (p *CommentService) Get(postId int) ([]test.Comment, error) {
+func (p *CommentService) Get(postId int) ([]models.Comment, error) {
 	return p.repository.Get(postId)
 }
 
-func (p *CommentService) Update(postId, id int, comment test.Comment) error {
+func (p *CommentService) Update(postId, id int, comment models.Comment) error {
 	return p.repository.Update(postId, id, comment)
 }
 
