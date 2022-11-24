@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
-	"test"
+	"test/pkg/repository/models"
 	"test/pkg/service"
 	mockService "test/pkg/service/mocks"
 	"testing"
@@ -26,27 +26,29 @@ func TestHandler_GetPosts(t *testing.T) {
 		{
 			name: "ok",
 			mockBehavior: func(s *mockService.MockPost) {
-				ret := []test.Post{
+				ret := []models.Post{
 					{
-						Id:    1,
-						Title: "title1",
-						Anons: "anons1",
+						Id:     1,
+						UserId: 12,
+						Title:  "title1",
+						Anons:  "anons1",
 					},
 					{
-						Id:    2,
-						Title: "title2",
-						Anons: "anons2",
+						Id:     2,
+						UserId: 15,
+						Title:  "title2",
+						Anons:  "anons2",
 					},
 				}
 				s.EXPECT().Get().Return(ret, nil)
 			},
 			expectedStatusCode:   200,
-			expectedResponseBody: `{"posts":[{"id":1,"title":"title1","anons":"anons1"},{"id":2,"title":"title2","anons":"anons2"}]}` + "\n",
+			expectedResponseBody: `{"posts":[{"id":1,"user_id":12,"title":"title1","anons":"anons1"},{"id":2,"user_id":15,"title":"title2","anons":"anons2"}]}` + "\n",
 		},
 		{
 			name: "Server error",
 			mockBehavior: func(s *mockService.MockPost) {
-				s.EXPECT().Get().Return([]test.Post{}, errors.New("something went wrong"))
+				s.EXPECT().Get().Return([]models.Post{}, errors.New("something went wrong"))
 			},
 			expectedStatusCode:   500,
 			expectedResponseBody: `{"message":"something went wrong"}` + "\n",
@@ -98,30 +100,32 @@ func TestHandler_GetUserPosts(t *testing.T) {
 	}{
 		{
 			name:       "ok",
-			inputParam: 2,
+			inputParam: 12,
 			mockBehavior: func(s *mockService.MockPost, userId int) {
-				ret := []test.Post{
+				ret := []models.Post{
 					{
-						Id:    1,
-						Title: "title1",
-						Anons: "anons1",
+						Id:     1,
+						UserId: 12,
+						Title:  "title1",
+						Anons:  "anons1",
 					},
 					{
-						Id:    2,
-						Title: "title2",
-						Anons: "anons2",
+						Id:     2,
+						UserId: 12,
+						Title:  "title2",
+						Anons:  "anons2",
 					},
 				}
 				s.EXPECT().GetByUserId(userId).Return(ret, nil)
 			},
 			expectedStatusCode:   200,
-			expectedResponseBody: `{"posts":[{"id":1,"title":"title1","anons":"anons1"},{"id":2,"title":"title2","anons":"anons2"}]}` + "\n",
+			expectedResponseBody: `{"posts":[{"id":1,"user_id":12,"title":"title1","anons":"anons1"},{"id":2,"user_id":12,"title":"title2","anons":"anons2"}]}` + "\n",
 		},
 		{
 			name:       "error param",
-			inputParam: 2,
+			inputParam: 12,
 			mockBehavior: func(s *mockService.MockPost, userId int) {
-				s.EXPECT().GetByUserId(userId).Return([]test.Post{}, errors.New("something went wrong"))
+				s.EXPECT().GetByUserId(userId).Return([]models.Post{}, errors.New("something went wrong"))
 			},
 			expectedStatusCode:   500,
 			expectedResponseBody: `{"message":"wrong user ID"}` + "\n",
@@ -152,7 +156,7 @@ func TestHandler_GetUserPosts(t *testing.T) {
 			ctx := e.NewContext(req, rec)
 			ctx.SetPath("/api/posts/user/:id")
 			ctx.SetParamNames("id")
-			ctx.SetParamValues("2")
+			ctx.SetParamValues("12")
 
 			//Проверка результатов
 			if assert.NoError(t, handler.GetUserPosts(ctx)) {
@@ -178,21 +182,22 @@ func TestHandler_GetPostById(t *testing.T) {
 			name:       "ok",
 			inputParam: 1,
 			mockBehavior: func(s *mockService.MockPost, id int) {
-				ret := test.Post{
-					Id:    1,
-					Title: "title",
-					Anons: "anons",
+				ret := models.Post{
+					Id:     1,
+					UserId: 12,
+					Title:  "title",
+					Anons:  "anons",
 				}
 				s.EXPECT().GetById(id).Return(ret, nil)
 			},
 			expectedStatusCode:   200,
-			expectedResponseBody: `{"id":1,"title":"title","anons":"anons"}` + "\n",
+			expectedResponseBody: `{"id":1,"user_id":12,"title":"title","anons":"anons"}` + "\n",
 		},
 		{
 			name:       "error param",
 			inputParam: 1,
 			mockBehavior: func(s *mockService.MockPost, id int) {
-				s.EXPECT().GetById(id).Return(test.Post{}, errors.New("ID is incorrect."))
+				s.EXPECT().GetById(id).Return(models.Post{}, errors.New("ID is incorrect."))
 			},
 			expectedStatusCode:   500,
 			expectedResponseBody: `{"message":"ID is incorrect."}` + "\n",
@@ -236,41 +241,43 @@ func TestHandler_GetPostById(t *testing.T) {
 }
 
 func TestHandler_PostPost(t *testing.T) {
-	type mockBehavior func(s *mockService.MockPost, userId int, post test.Post)
+	type mockBehavior func(s *mockService.MockPost, post models.Post)
 
 	testTable := []struct {
 		name                 string
-		userId               int
+		paramUserId          int
 		inputBody            string
-		inputPost            test.Post
+		inputPost            models.Post
 		mockBehavior         mockBehavior
 		expectedStatusCode   int
 		expectedResponseBody string
 	}{
 		{
-			name:      "ok",
-			userId:    3,
-			inputBody: `{"title":"test title","anons":"test anons"}`,
-			inputPost: test.Post{
-				Title: "test title",
-				Anons: "test anons",
+			name:        "ok",
+			paramUserId: 12,
+			inputBody:   `{"title":"test title","anons":"test anons"}`,
+			inputPost: models.Post{
+				UserId: 12,
+				Title:  "test title",
+				Anons:  "test anons",
 			},
-			mockBehavior: func(s *mockService.MockPost, userId int, post test.Post) {
-				s.EXPECT().Create(userId, post).Return(1, nil)
+			mockBehavior: func(s *mockService.MockPost, post models.Post) {
+				s.EXPECT().Create(post).Return(1, nil)
 			},
 			expectedStatusCode:   200,
 			expectedResponseBody: `{"id":1}` + "\n",
 		},
 		{
-			name:      "server error",
-			userId:    3,
-			inputBody: `{"title":"test title","anons":"test anons"}`,
-			inputPost: test.Post{
-				Title: "test title",
-				Anons: "test anons",
+			name:        "server error",
+			paramUserId: 12,
+			inputBody:   `{"title":"test title","anons":"test anons"}`,
+			inputPost: models.Post{
+				UserId: 12,
+				Title:  "test title",
+				Anons:  "test anons",
 			},
-			mockBehavior: func(s *mockService.MockPost, userId int, post test.Post) {
-				s.EXPECT().Create(userId, post).Return(0, errors.New("server error"))
+			mockBehavior: func(s *mockService.MockPost, post models.Post) {
+				s.EXPECT().Create(post).Return(0, errors.New("server error"))
 			},
 			expectedStatusCode:   500,
 			expectedResponseBody: `{"message":"server error"}` + "\n",
@@ -278,11 +285,12 @@ func TestHandler_PostPost(t *testing.T) {
 		{
 			name:      "Error request data",
 			inputBody: "error",
-			inputPost: test.Post{
-				Title: "test title",
-				Anons: "test anons",
+			inputPost: models.Post{
+				UserId: 12,
+				Title:  "test title",
+				Anons:  "test anons",
 			},
-			mockBehavior: func(s *mockService.MockPost, userId int, post test.Post) {
+			mockBehavior: func(s *mockService.MockPost, post models.Post) {
 			},
 			expectedStatusCode:   400,
 			expectedResponseBody: `{"message":"incorrect request data"}` + "\n",
@@ -298,7 +306,7 @@ func TestHandler_PostPost(t *testing.T) {
 			defer c.Finish()
 
 			post := mockService.NewMockPost(c)
-			testCase.mockBehavior(post, testCase.userId, testCase.inputPost)
+			testCase.mockBehavior(post, testCase.inputPost)
 
 			services := &service.Service{Post: post}
 			handler := NewHandler(services)
@@ -312,7 +320,7 @@ func TestHandler_PostPost(t *testing.T) {
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			ctx := e.NewContext(req, rec)
-			ctx.Set(userCtx, 3)
+			ctx.Set(userCtx, 12)
 
 			//Проверка результатов
 			if assert.NoError(t, handler.PostPost(ctx)) {
@@ -325,44 +333,41 @@ func TestHandler_PostPost(t *testing.T) {
 }
 
 func TestHandler_UpdatePost(t *testing.T) {
-	type mockBehavior func(s *mockService.MockPost, userId int, postId int, post test.Post)
+	type mockBehavior func(s *mockService.MockPost, postId int, post models.Post)
 
 	testTable := []struct {
 		name                 string
-		userId               int
 		postId               int
 		inputBody            string
-		inputPost            test.Post
+		inputPost            models.Post
 		mockBehavior         mockBehavior
 		expectedStatusCode   int
 		expectedResponseBody string
 	}{
 		{
 			name:      "ok",
-			userId:    3,
 			postId:    1,
 			inputBody: `{"title":"new title","anons":"new anons"}`,
-			inputPost: test.Post{
+			inputPost: models.Post{
 				Title: "new title",
 				Anons: "new anons",
 			},
-			mockBehavior: func(s *mockService.MockPost, userId int, postId int, post test.Post) {
-				s.EXPECT().Update(userId, postId, post).Return(nil)
+			mockBehavior: func(s *mockService.MockPost, postId int, post models.Post) {
+				s.EXPECT().Update(postId, post).Return(nil)
 			},
 			expectedStatusCode:   202,
 			expectedResponseBody: `{"message":"Post with id 1 updated"}` + "\n",
 		},
 		{
 			name:      "server error",
-			userId:    3,
 			postId:    1,
 			inputBody: `{"title":"test title","anons":"test anons"}`,
-			inputPost: test.Post{
+			inputPost: models.Post{
 				Title: "test title",
 				Anons: "test anons",
 			},
-			mockBehavior: func(s *mockService.MockPost, userId int, postId int, post test.Post) {
-				s.EXPECT().Update(userId, postId, post).Return(errors.New("server error"))
+			mockBehavior: func(s *mockService.MockPost, postId int, post models.Post) {
+				s.EXPECT().Update(postId, post).Return(errors.New("server error"))
 			},
 			expectedStatusCode:   500,
 			expectedResponseBody: `{"message":"server error"}` + "\n",
@@ -370,13 +375,12 @@ func TestHandler_UpdatePost(t *testing.T) {
 		{
 			name:      "Error request data",
 			inputBody: "error",
-			userId:    3,
 			postId:    1,
-			inputPost: test.Post{
+			inputPost: models.Post{
 				Title: "test title",
 				Anons: "test anons",
 			},
-			mockBehavior: func(s *mockService.MockPost, userId int, postId int, post test.Post) {
+			mockBehavior: func(s *mockService.MockPost, postId int, post models.Post) {
 			},
 			expectedStatusCode:   400,
 			expectedResponseBody: `{"message":"incorrect request data"}` + "\n",
@@ -392,7 +396,7 @@ func TestHandler_UpdatePost(t *testing.T) {
 			defer c.Finish()
 
 			post := mockService.NewMockPost(c)
-			testCase.mockBehavior(post, testCase.userId, testCase.postId, testCase.inputPost)
+			testCase.mockBehavior(post, testCase.postId, testCase.inputPost)
 
 			services := &service.Service{Post: post}
 			handler := NewHandler(services)
@@ -406,7 +410,6 @@ func TestHandler_UpdatePost(t *testing.T) {
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			ctx := e.NewContext(req, rec)
-			ctx.Set(userCtx, 3)
 			ctx.SetPath("/api/posts/:id")
 			ctx.SetParamNames("id")
 			ctx.SetParamValues("1")
@@ -422,11 +425,10 @@ func TestHandler_UpdatePost(t *testing.T) {
 }
 
 func TestHandler_DeletePost(t *testing.T) {
-	type mockBehavior func(s *mockService.MockPost, userId int, postId int)
+	type mockBehavior func(s *mockService.MockPost, postId int)
 
 	testTable := []struct {
 		name                 string
-		userId               int
 		postId               int
 		mockBehavior         mockBehavior
 		expectedStatusCode   int
@@ -434,21 +436,18 @@ func TestHandler_DeletePost(t *testing.T) {
 	}{
 		{
 			name:   "ok",
-			userId: 3,
 			postId: 1,
-			mockBehavior: func(s *mockService.MockPost, userId int, postId int) {
-				s.EXPECT().Delete(userId, postId).Return(nil)
+			mockBehavior: func(s *mockService.MockPost, postId int) {
+				s.EXPECT().Delete(postId).Return(nil)
 			},
 			expectedStatusCode:   202,
 			expectedResponseBody: `{"message":"Post with id 1 deleted"}` + "\n",
 		},
 		{
 			name:   "server error",
-			userId: 3,
 			postId: 1,
-
-			mockBehavior: func(s *mockService.MockPost, userId int, postId int) {
-				s.EXPECT().Delete(userId, postId).Return(errors.New("server error"))
+			mockBehavior: func(s *mockService.MockPost, postId int) {
+				s.EXPECT().Delete(postId).Return(errors.New("server error"))
 			},
 			expectedStatusCode:   500,
 			expectedResponseBody: `{"message":"server error"}` + "\n",
@@ -464,7 +463,7 @@ func TestHandler_DeletePost(t *testing.T) {
 			defer c.Finish()
 
 			post := mockService.NewMockPost(c)
-			testCase.mockBehavior(post, testCase.userId, testCase.postId)
+			testCase.mockBehavior(post, testCase.postId)
 
 			services := &service.Service{Post: post}
 			handler := NewHandler(services)
@@ -477,7 +476,6 @@ func TestHandler_DeletePost(t *testing.T) {
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			ctx := e.NewContext(req, rec)
-			ctx.Set(userCtx, 3)
 			ctx.SetPath("/api/posts/:id")
 			ctx.SetParamNames("id")
 			ctx.SetParamValues("1")

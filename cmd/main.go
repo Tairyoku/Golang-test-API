@@ -1,8 +1,9 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"log"
-	"test"
+	"os"
 	"test/pkg/handler"
 	"test/pkg/repository"
 	"test/pkg/service"
@@ -23,24 +24,26 @@ import (
 // @BasePath /
 
 func main() {
-
-	db, err := repository.NewMysqlDB(repository.Config{
-		Username: "root",
-		Password: "",
-		Host:     "tcp",
-		Url:      "127.0.0.1:3306",
-		DBName:   "myFirstDB",
+	errEnv := godotenv.Load()
+	if errEnv != nil {
+		log.Fatal("Error loading .env file")
+	}
+	db, err := repository.NewRepositoryDB(repository.Config{
+		Username: os.Getenv("DBUsername"),
+		Password: os.Getenv("DBPassword"),
+		Host:     os.Getenv("DBHost"),
+		Url:      os.Getenv("DBUrl"),
+		DBName:   os.Getenv("DBName"),
 	})
 	if err != nil {
 		log.Fatalf("error %s", err.Error())
 	}
-
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
 
-	server := new(test.Server)
-	if err := server.Run(":8080", handlers.InitRoutes()); err != nil {
+	server := new(service.Server)
+	if err := server.Run(os.Getenv("PORT"), handlers.InitRoutes()); err != nil {
 		log.Fatalf("error %s", err.Error())
 	}
 

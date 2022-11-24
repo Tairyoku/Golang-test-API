@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"test"
+	"test/pkg/repository/models"
 )
 
 // SignUp godoc
@@ -19,7 +19,7 @@ import (
 // @Failure 	 500 	{object} ErrorResponse	 "something went wrong"
 // @Router       /auth/sign-up [post]
 func (h *Handler) SignUp(c echo.Context) error {
-	var input test.User
+	var input models.User
 
 	if errReq := c.Bind(&input); errReq != nil {
 		NewErrorResponse(c, http.StatusBadRequest, "incorrect request data")
@@ -98,38 +98,3 @@ func (h *Handler) SignIn(c echo.Context) error {
 	}
 	return nil
 }
-
-//func (h *Handler) SignInWithGoogle(c echo.Context) error {
-//
-//	// get request from google api
-//	var input = test.User{
-//		//Id:       0,
-//		Name:     GetParam(c, Name),
-//		Username: GetParam(c, Username),
-//		Password: GetParam(c, Password),
-//	}
-//	fmt.Println(input)
-//
-//	//check username: if it is not used (it will get an error), try to create new user
-//	errUser := h.services.Authorization.CheckUser(input.Username)
-//
-//	if errUser != nil {
-//		h.GoogleSignUp(c, input)
-//	}
-//
-//	// if username is required, to login and to generate token
-//	h.GoogleSignIn(c, input)
-//return nil
-//}
-//
-//func (h Handler) Testing(c echo.Context) error {
-//	var name string
-//	errReq := GetRequest(c, name)
-//	if errReq != nil {
-//		return errReq
-//	}
-//
-//	res, _ := h.services.Authorization.Testing(name)
-//	c.JSON(http.StatusOK, res)
-//	return nil
-//}

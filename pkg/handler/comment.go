@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"test"
+	"test/pkg/repository/models"
 )
 
 // GetComments godoc
@@ -18,6 +18,7 @@ import (
 // @Failure 	400 {object} ErrorResponse	 "postId is not integer"
 // @Failure 	500 {object} ErrorResponse	 "something went wrong"
 // @Router      /api/posts/{postId}/comments [get]
+
 func (h *Handler) GetComments(c echo.Context) error {
 	postId, errParams := GetParam(c, ParamPostId)
 	if errParams != nil {
@@ -56,6 +57,7 @@ func (h *Handler) GetComments(c echo.Context) error {
 // @Failure 	 404 	{object} ErrorResponse	 "user id not found"
 // @Failure 	 500 	{object} ErrorResponse	 "server error"
 // @Router       /api/posts/{postId}/comments [post]
+
 func (h *Handler) PostComment(c echo.Context) error {
 	postId, errParams := GetParam(c, ParamPostId)
 	if errParams != nil {
@@ -66,15 +68,17 @@ func (h *Handler) PostComment(c echo.Context) error {
 	if errUserParams != nil {
 		return nil
 	}
-	var comment test.Comment
+
+	var comment models.Comment
 	errReq := GetRequest(c, &comment)
 	if errReq != nil {
 		return errReq
 	}
 
 	comment.UserId = userId
+	comment.PostId = postId
 
-	id, err := h.services.Comment.Create(postId, comment)
+	id, err := h.services.Comment.Create(comment)
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, "server error")
 		return nil
@@ -103,6 +107,7 @@ func (h *Handler) PostComment(c echo.Context) error {
 // @Failure 	400 {object} ErrorResponse	 "postId is not integer"
 // @Failure 	500 {object} ErrorResponse	 "server error"
 // @Router       /api/posts/{postId}/comments/{id} [put]
+
 func (h *Handler) UpdateComment(c echo.Context) error {
 	id, errParamId := GetParam(c, ParamId)
 	if errParamId != nil {
@@ -114,7 +119,7 @@ func (h *Handler) UpdateComment(c echo.Context) error {
 		return errParams
 	}
 
-	var comment test.Comment
+	var comment models.Comment
 	errReq := GetRequest(c, &comment)
 	if errReq != nil {
 		return errReq
@@ -147,6 +152,7 @@ func (h *Handler) UpdateComment(c echo.Context) error {
 // @Failure 	400 {object} ErrorResponse	 "postId is not integer"
 // @Failure 	500 {object} ErrorResponse	 "server error"
 // @Router       /api/posts/{postId}/comments/{id} [delete]
+
 func (h *Handler) DeleteComment(c echo.Context) error {
 	id, errParamId := GetParam(c, ParamId)
 	if errParamId != nil {
